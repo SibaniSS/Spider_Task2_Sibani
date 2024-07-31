@@ -1,0 +1,36 @@
+.favorites-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px; /* Adjust the spacing between cards */
+  justify-content: center; /* Center the cards in the container */
+  padding: 20px;
+}
+
+.favorite-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  width: 200px; /* Adjust the card width as needed */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.favorite-card:hover {
+  transform: scale(1.05);
+}
+
+.favorite-card img {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.favorite-card article,
+.favorite-card h3,
+.favorite-card p {
+  margin: 8px 0;
+  text-align: center;
+}
+

@@ -1,0 +1,36 @@
+.purchases-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px; 
+    justify-content: center; 
+    padding: 20px;
+  }
+  
+  .purchase-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    width: 200px; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+  }
+  
+  .purchase-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .purchase-card img {
+    max-width: 100%;
+    border-radius: 8px;
+  }
+  
+  .purchase-card article,
+  .purchase-card h3,
+  .purchase-card p {
+    margin: 8px 0;
+    text-align: center;
+  }
+  
