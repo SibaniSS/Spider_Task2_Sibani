@@ -31,9 +31,13 @@ const Header = () => {
         >
           <Tab LinkComponent={NavLink} to="/about" label="Home" />
           <Tab LinkComponent={NavLink} to="/books" label="Books" />
-          <Tab LinkComponent={NavLink} to="/add" label="Add Book" />
-          <Tab LinkComponent={NavLink} to="/favorites" label="Favorites" />
-          <Tab LinkComponent={NavLink} to="/purchases" label="Purchase" />
+          {auth.isLoggedIn && (
+            <>
+              <Tab LinkComponent={NavLink} to="/add" label="Add Book" />
+              <Tab LinkComponent={NavLink} to="/favorites" label="Favorites" />
+              <Tab LinkComponent={NavLink} to="/purchases" label="Purchases" />
+            </>
+          )}
         </Tabs>
         {auth.isLoggedIn ? (
           <Box display="flex" alignItems="center" ml={2}>
@@ -46,12 +50,20 @@ const Header = () => {
             </Button>
           </Box>
         ) : (
-          <Button
-            color="inherit"
-            onClick={() => navigate('/login')}
-          >
-            Login
-          </Button>
+          <Box display="flex" alignItems="center" ml={2}>
+            <Button
+              color="inherit"
+              onClick={() => navigate('/login')}
+            >
+              Login
+            </Button>
+            <Button
+              color="inherit"
+              onClick={() => navigate('/signup')}
+            >
+              Signup
+            </Button>
+          </Box>
         )}
       </Toolbar>
     </AppBar>
@@ -59,3 +71,4 @@ const Header = () => {
 };
 
 export default Header;
+

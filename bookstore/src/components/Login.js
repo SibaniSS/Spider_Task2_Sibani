@@ -2,31 +2,44 @@ import React, { useState, useContext } from "react";
 import { Button, TextField, Typography, Container, Avatar, Paper } from "@mui/material";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+//import { useNavigate } from "react-router-dom";
+//import axios from "axios";
 
 const Login = () => {
   const auth = useContext(AuthContext);
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("Form submitted");
-    console.log("Email:", email);
-    console.log("Password:", password);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    console.log('Form data:', { email, password });
+
     try {
-      const response = await axios.post("http://localhost:5000/auth/login", { email, password });
-      console.log("Response:", response.data);
-      auth.login(response.data.userId, response.data.token, response.data.userName, response.data.userProfilePic);
-      navigate("/");
-    } catch (err) {
-      console.error("Error response:", err.response);
-      setError("Invalid credentials. Please try again.");
+      const response = await fetch('http://localhost:5000/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'Could not authenticate.');
+      }
+
+      console.log('Login successful', data);
+      // Handle successful login here, like setting the auth context and navigating to the dashboard
+      auth.login(data.userId, data.token);
+    
+    } catch (error) {
+      console.error('Login failed', error);
+      setError(error.message);
     }
   };
+  console.log('Form data:', { email, password });
 
   return (
     <Container component="main" maxWidth="xs">

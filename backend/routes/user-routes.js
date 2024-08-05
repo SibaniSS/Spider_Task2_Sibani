@@ -1,53 +1,39 @@
 const express = require('express');
-const router = express.Router();
-const User = require('../model/user');
-const bcrypt = require('bcrypt');
+const { check } = require('express-validator');
 const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
+const userController = require('../controllers/user-controllers');
+const authMiddleware = require('../middleware/authmiddleware');
 
+const router = express.Router();
 
-router.post('/register', async (req, res) => {
-  const { username, email, password } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const user = new User({ username, email, password: hashedPassword });
-  await user.save();
-  res.status(201).json(user);
-});
-
-// Get user profile
-router.get('/:id', async (req, res) => {
-  const user = await User.findById(req.params.id);
-  res.json(user);
-});
-
-// Update user profile
-router.put('/:id', async (req, res) => {
-  const updates = req.body;
-  if (updates.password) {
-    updates.password = await bcrypt.hash(updates.password, 10);
-  }
-  const user = await User.findByIdAndUpdate(req.params.id, updates, { new: true });
-  res.json(user);
-});
-
-// Upload profile picture
-router.post('/:id/profile-picture', upload.single('profilePicture'), async (req, res) => {
-  const user = await User.findByIdAndUpdate(req.params.id, { profilePicture: req.file.path }, { new: true });
-  res.json(user);
-});
-
-// Change password
-router.post('/:id/change-password', async (req, res) => {
-  const { oldPassword, newPassword } = req.body;
-  const user = await User.findById(req.params.id);
-  const isMatch = await bcrypt.compare(oldPassword, user.password);
-  if (isMatch) {
-    user.password = await bcrypt.hash(newPassword, 10);
-    await user.save();
-    res.json({ message: 'Password changed successfully' });
-  } else {
-    res.status(400).json({ message: 'Incorrect old password' });
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, new Date().toISOString().replace(/:/g, '-') + file.originalname);
   }
 });
+
+const upload = multer({ storage: storage });
+
+router.post(
+  '/signup',
+  upload.single('profilePicture'),
+  [
+    check('name').not().isEmpty(),
+    check('email').normalizeEmail().isEmail(),
+    check('password').isLength({ min: 6 })
+  ],
+  userController.signup
+);
+
+router.post('/login', userController.login);
+
+router.get('/profile', authMiddleware, userController.getProfile);
+
+router.patch('/users/:id', authMiddleware, userController.updateUser);
+
+router.post('/:id/profile-picture', authMiddleware, upload.single('profilePicture'), userController.uploadProfilePicture);
 
 module.exports = router;
